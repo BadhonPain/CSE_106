@@ -81,7 +81,7 @@ int delete_cur(arrayList *list)
         return -1;
 
     int idx = list->cur_pos - 1;
-    int deleted = list->array[idx];
+    int deleting_elem = list->array[idx];
 
     for (int i = idx; i < list->size - 1; i++)
         list->array[i] = list->array[i + 1];
@@ -103,7 +103,7 @@ int delete_cur(arrayList *list)
     if (list->size < list->capacity / 4)
         decrease_capacity(list);
 
-    return deleted;
+    return deleting_elem;
 }
 
 void append(int item, arrayList *list)
@@ -153,7 +153,6 @@ int delete_item(int item, arrayList* list)
 {
     int idx = -1;
 
-    // search first occurrence
     for (int i = 0; i < list->size; i++)
     {
         if (list->array[i] == item)
@@ -176,11 +175,9 @@ int delete_item(int item, arrayList* list)
 
     list->size--;
 
-    // cursor adjustment (THE FIX)
     if (idx <= barValueIdx)
         list->cur_pos--;
 
-    // bounds safety
     if (list->cur_pos < 0) list->cur_pos = 0;
     if (list->cur_pos > list->size) list->cur_pos = list->size;
 
@@ -222,10 +219,10 @@ int update(int ind, int value, arrayList *list)
     if (ind < 0 || ind >= list->size)
         return -1;
 
-    int old = list->array[ind];
+    int temp = list->array[ind];
     list->array[ind] = value;
     list->cur_pos = ind+1;
-    return old;
+    return temp;
 }
 
 int trim(arrayList *list)

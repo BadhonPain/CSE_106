@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* ---------- Node ---------- */
 typedef struct node
 {
     int element;
@@ -9,17 +8,15 @@ typedef struct node
     struct node* prev;
 } node;
 
-/* ---------- Linked List ---------- */
 typedef struct
 {
     node* head;
     node* tail;
-    int cur;    // cursor position (bar)
-    int length;
+    int cur;    
+    int size;
 } linkedList;
 
-/* ---------- Helper ---------- */
-node* getNodeAt(linkedList* list, int index)
+node* create_node(linkedList* list, int index)
 {
     node* temp = list->head;
     for (int i = 0; i < index && temp; i++)
@@ -27,13 +24,12 @@ node* getNodeAt(linkedList* list, int index)
     return temp;
 }
 
-/* ---------- Core ---------- */
 void init(linkedList* list)
 {
     list->head = NULL;
     list->tail = NULL;
     list->cur = 0;
-    list->length = 0;
+    list->size = 0;
 }
 
 void free_list(linkedList* list)
@@ -48,10 +44,9 @@ void free_list(linkedList* list)
     init(list);
 }
 
-/* ---------- Print ---------- */
 void print(linkedList* list)
 {
-    if (list->length == 0)
+    if (list->size == 0)
     {
         printf("[ . ]\n");
         return;
@@ -76,7 +71,6 @@ void print(linkedList* list)
     printf(" ]\n");
 }
 
-/* ---------- Insert ---------- */
 void insert(int item, linkedList* list)
 {
     node* newNode = (node*)malloc(sizeof(node));
@@ -84,7 +78,7 @@ void insert(int item, linkedList* list)
     newNode->next = NULL;
     newNode->prev = NULL;
 
-    if (list->length == 0)
+    if (list->size == 0)
     {
         list->head = list->tail = newNode;
     }
@@ -94,7 +88,7 @@ void insert(int item, linkedList* list)
         list->head->prev = newNode;
         list->head = newNode;
     }
-    else if (list->cur == list->length)
+    else if (list->cur == list->size)
     {
         newNode->prev = list->tail;
         list->tail->next = newNode;
@@ -102,7 +96,7 @@ void insert(int item, linkedList* list)
     }
     else
     {
-        node* right = getNodeAt(list, list->cur);
+        node* right = create_node(list, list->cur);
         node* left = right->prev;
 
         left->next = newNode;
@@ -111,18 +105,17 @@ void insert(int item, linkedList* list)
         right->prev = newNode;
     }
 
-    list->length++;
-    list->cur++;   // cursor moves right
+    list->size++;
+    list->cur++;  
 }
 
-/* ---------- Delete Current ---------- */
 int delete_cur(linkedList* list)
 {
-    if (list->length == 0 || list->cur == 0)
+    if (list->size == 0 || list->cur == 0)
         return -1;
 
     int idx = list->cur - 1;
-    node* target = getNodeAt(list, idx);
+    node* target = create_node(list, idx);
     int deleted = target->element;
 
     node* left = target->prev;
@@ -135,16 +128,14 @@ int delete_cur(linkedList* list)
     else list->tail = left;
 
     free(target);
-    list->length--;
+    list->size--;
 
-    /* prefer right neighbor */
-    if (idx == list->length)
+    if (idx == list->size)
         list->cur--;
 
     return deleted;
 }
 
-/* ---------- Append ---------- */
 void append(int item, linkedList* list)
 {
     node* newNode = (node*)malloc(sizeof(node));
@@ -152,7 +143,7 @@ void append(int item, linkedList* list)
     newNode->next = NULL;
     newNode->prev = list->tail;
 
-    if (list->length == 0)
+    if (list->size == 0)
     {
         list->head = list->tail = newNode;
         list->cur = 1;
@@ -163,16 +154,14 @@ void append(int item, linkedList* list)
         list->tail = newNode;
     }
 
-    list->length++;
+    list->size++;
 }
 
-/* ---------- Size ---------- */
 int size(linkedList* list)
 {
-    return list->length;
+    return list->size;
 }
 
-/* ---------- Cursor Movement ---------- */
 void prev(int n, linkedList* list)
 {
     list->cur -= n;
@@ -183,11 +172,10 @@ void prev(int n, linkedList* list)
 void next(int n, linkedList* list)
 {
     list->cur += n;
-    if (list->cur > list->length)
-        list->cur = list->length;
+    if (list->cur > list->size)
+        list->cur = list->size;
 }
 
-/* ---------- Presence ---------- */
 int is_present(int n, linkedList* list)
 {
     node* temp = list->head;
@@ -200,13 +188,11 @@ int is_present(int n, linkedList* list)
     return 0;
 }
 
-/* ---------- Clear ---------- */
 void clear(linkedList* list)
 {
     free_list(list);
 }
 
-/* ---------- Delete Item ---------- */
 int delete_item(int item, linkedList* list)
 {
     node* temp = list->head;
@@ -238,34 +224,32 @@ int delete_item(int item, linkedList* list)
     else list->tail = left;
 
     free(temp);
-    list->length--;
+    list->size--;
 
     if (idx <= barValueIdx)
         list->cur--;
 
     if (list->cur < 0) list->cur = 0;
-    if (list->cur > list->length) list->cur = list->length;
+    if (list->cur > list->size) list->cur = list->size;
 
     return 1;
 }
 
-/* ---------- Swap ---------- */
 void swap_ind(int ind1, int ind2, linkedList* list)
 {
-    if (ind1 < 0 || ind2 < 0 || ind1 >= list->length || ind2 >= list->length)
+    if (ind1 < 0 || ind2 < 0 || ind1 >= list->size || ind2 >= list->size)
         return;
 
     if (ind1 == ind2) return;
 
-    node* n1 = getNodeAt(list, ind1);
-    node* n2 = getNodeAt(list, ind2);
+    node* n1 = create_node(list, ind1);
+    node* n2 = create_node(list, ind2);
 
     int tmp = n1->element;
     n1->element = n2->element;
     n2->element = tmp;
 }
 
-/* ---------- Search ---------- */
 int search(int item, linkedList* list)
 {
     node* temp = list->head;
@@ -280,31 +264,29 @@ int search(int item, linkedList* list)
     return -1;
 }
 
-/* ---------- Find ---------- */
 int find(int ind, linkedList* list)
 {
-    if (ind < 0 || ind >= list->length)
+    if (ind < 0 || ind >= list->size)
     {
         printf("%d is not a valid index\n", ind);
         return -1;
     }
 
-    node* n = getNodeAt(list, ind);
+    node* n = create_node(list, ind);
     list->cur = ind + 1;
     print(list);
     return n->element;
 }
 
-/* ---------- Update ---------- */
 int update(int ind, int value, linkedList* list)
 {
-    if (ind < 0 || ind >= list->length)
+    if (ind < 0 || ind >= list->size)
     {
         printf("%d is not a valid index\n", ind);
         return -1;
     }
 
-    node* n = getNodeAt(list, ind);
+    node* n = create_node(list, ind);
     int old = n->element;
     n->element = value;
 
@@ -313,10 +295,9 @@ int update(int ind, int value, linkedList* list)
     return old;
 }
 
-/* ---------- Trim ---------- */
 int trim(linkedList* list)
 {
-    if (list->length == 0)
+    if (list->size == 0)
         return -1;
 
     int val = list->tail->element;
@@ -329,31 +310,29 @@ int trim(linkedList* list)
         list->head = NULL;
 
     free(temp);
-    list->length--;
+    list->size--;
 
-    if (list->cur > list->length)
-        list->cur = list->length;
+    if (list->cur > list->size)
+        list->cur = list->size;
 
     return val;
 }
 
-/* ---------- Reverse ---------- */
 void reverse(linkedList* list)
 {
-    node* curr = list->head;
+    node* cur = list->head;
     node* temp = NULL;
 
-    while (curr)
+    while (cur)
     {
-        temp = curr->prev;
-        curr->prev = curr->next;
-        curr->next = temp;
-        curr = curr->prev;
+        temp = cur->prev;
+        cur->prev = cur->next;
+        cur->next = temp;
+        cur = cur->prev;
     }
 
     temp = list->head;
     list->head = list->tail;
     list->tail = temp;
 
-    /* DO NOT MODIFY list->cur */
 }
