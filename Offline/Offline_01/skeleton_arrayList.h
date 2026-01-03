@@ -54,12 +54,12 @@ void print(arrayList *list)
     printf("[");
     for (int i = 0; i < list->size; i++)
     {
-        if (i+1 == list->cur_pos)
+        if (i + 1 == list->cur_pos)
             printf(" %d|", list->array[i]);
         else
             printf(" %d", list->array[i]);
     }
-    printf(" ]\n");
+    printf(" ]\n\n");
 }
 
 void insert(int item, arrayList *list)
@@ -72,7 +72,7 @@ void insert(int item, arrayList *list)
 
     list->array[list->cur_pos] = item;
     list->size++;
-    list->cur_pos++; 
+    list->cur_pos++;
 }
 
 int delete_cur(arrayList *list)
@@ -88,13 +88,8 @@ int delete_cur(arrayList *list)
 
     list->size--;
 
-   
     if (idx == list->size)
-    {
-      
         list->cur_pos--;
-    }
-    
     if (list->cur_pos < 0)
         list->cur_pos = 0;
     if (list->cur_pos > list->size)
@@ -113,7 +108,7 @@ void append(int item, arrayList *list)
 
     list->array[list->size++] = item;
     if (list->size == 1)
-        list->cur_pos = 1; 
+        list->cur_pos = 1;
 }
 
 int size(arrayList *list)
@@ -149,10 +144,9 @@ void clear(arrayList *list)
     init(list);
 }
 
-int delete_item(int item, arrayList* list)
+int delete_item(int item, arrayList *list)
 {
     int idx = -1;
-
     for (int i = 0; i < list->size; i++)
     {
         if (list->array[i] == item)
@@ -163,26 +157,27 @@ int delete_item(int item, arrayList* list)
     }
 
     if (idx == -1)
-    {
-        printf("%d not found\n", item);
         return 0;
+
+    int temp = list->cur_pos;
+    list->cur_pos = idx + 1;
+    delete_cur(list);
+
+    if (temp != list->size + 1)
+    {
+        if (temp > idx + 1)
+            list->cur_pos = temp - 1;
+        else
+        {
+            if (temp > list->size)
+                list->cur_pos = list->size;
+            else
+                list->cur_pos = temp;
+        }
     }
 
-    int barValueIdx = list->cur_pos - 1;
-
-    for (int i = idx; i < list->size - 1; i++)
-        list->array[i] = list->array[i + 1];
-
-    list->size--;
-
-    if (idx <= barValueIdx)
-        list->cur_pos--;
-
-    if (list->cur_pos < 0) list->cur_pos = 0;
-    if (list->cur_pos > list->size) list->cur_pos = list->size;
-
-    if (list->size < list->capacity / 4)
-        decrease_capacity(list);
+    if (list->cur_pos < 0)
+        list->cur_pos = 0;
 
     return 1;
 }
@@ -221,7 +216,7 @@ int update(int ind, int value, arrayList *list)
 
     int temp = list->array[ind];
     list->array[ind] = value;
-    list->cur_pos = ind+1;
+    list->cur_pos = ind + 1;
     return temp;
 }
 

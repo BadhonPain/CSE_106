@@ -4,27 +4,19 @@
 typedef struct node
 {
     int element;
-    struct node* next;
-    struct node* prev;
+    struct node *next;
+    struct node *prev;
 } node;
 
 typedef struct
 {
-    node* head;
-    node* tail;
-    int cur;    
+    node *head;
+    node *tail;
+    int cur;
     int size;
 } linkedList;
 
-node* create_node(linkedList* list, int index)
-{
-    node* temp = list->head;
-    for (int i = 0; i < index && temp; i++)
-        temp = temp->next;
-    return temp;
-}
-
-void init(linkedList* list)
+void init(linkedList *list)
 {
     list->head = NULL;
     list->tail = NULL;
@@ -32,19 +24,41 @@ void init(linkedList* list)
     list->size = 0;
 }
 
-void free_list(linkedList* list)
+node *createNode(int item)
 {
-    node* temp = list->head;
-    while (temp)
+    node *newNode = (node *)malloc(sizeof(node));
+    if (newNode == NULL)
     {
-        node* next = temp->next;
-        free(temp);
-        temp = next;
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    newNode->element = item;
+    newNode->next = NULL;
+    newNode->prev = NULL;
+    return newNode;
+}
+
+node *traversal_ptr(linkedList *list, int index)
+{
+    node *temp = list->head;
+    for (int i = 0; i < index && temp; i++)
+        temp = temp->next;
+    return temp;
+}
+void free_list(linkedList *list)
+{
+    node *current = list->head;
+    node *temp;
+    while (current!= NULL)
+    {
+        temp = current->next;
+        free(current);
+        current = temp;
     }
     init(list);
 }
 
-void print(linkedList* list)
+void print(linkedList *list)
 {
     if (list->size == 0)
     {
@@ -53,7 +67,7 @@ void print(linkedList* list)
     }
 
     printf("[");
-    node* temp = list->head;
+    node *temp = list->head;
     int idx = 0;
 
     while (temp)
@@ -71,13 +85,9 @@ void print(linkedList* list)
     printf(" ]\n");
 }
 
-void insert(int item, linkedList* list)
+void insert(int item, linkedList *list)
 {
-    node* newNode = (node*)malloc(sizeof(node));
-    newNode->element = item;
-    newNode->next = NULL;
-    newNode->prev = NULL;
-
+    node *newNode = createNode(item);
     if (list->size == 0)
     {
         list->head = list->tail = newNode;
@@ -96,8 +106,8 @@ void insert(int item, linkedList* list)
     }
     else
     {
-        node* right = create_node(list, list->cur);
-        node* left = right->prev;
+        node *right = traversal_ptr(list, list->cur);
+        node *left = right->prev;
 
         left->next = newNode;
         newNode->prev = left;
@@ -106,26 +116,30 @@ void insert(int item, linkedList* list)
     }
 
     list->size++;
-    list->cur++;  
+    list->cur++;
 }
 
-int delete_cur(linkedList* list)
+int delete_cur(linkedList *list)
 {
     if (list->size == 0 || list->cur == 0)
         return -1;
 
     int idx = list->cur - 1;
-    node* target = create_node(list, idx);
+    node *target = traversal_ptr(list, idx);
     int deleted = target->element;
 
-    node* left = target->prev;
-    node* right = target->next;
+    node *left = target->prev;
+    node *right = target->next;
 
-    if (left) left->next = right;
-    else list->head = right;
+    if (left)
+        left->next = right;
+    else
+        list->head = right;
 
-    if (right) right->prev = left;
-    else list->tail = left;
+    if (right)
+        right->prev = left;
+    else
+        list->tail = left;
 
     free(target);
     list->size--;
@@ -136,12 +150,9 @@ int delete_cur(linkedList* list)
     return deleted;
 }
 
-void append(int item, linkedList* list)
+void append(int item, linkedList *list)
 {
-    node* newNode = (node*)malloc(sizeof(node));
-    newNode->element = item;
-    newNode->next = NULL;
-    newNode->prev = list->tail;
+    node *newNode = createNode(item);
 
     if (list->size == 0)
     {
@@ -157,28 +168,28 @@ void append(int item, linkedList* list)
     list->size++;
 }
 
-int size(linkedList* list)
+int size(linkedList *list)
 {
     return list->size;
 }
 
-void prev(int n, linkedList* list)
+void prev(int n, linkedList *list)
 {
     list->cur -= n;
     if (list->cur < 1)
         list->cur = 1;
 }
 
-void next(int n, linkedList* list)
+void next(int n, linkedList *list)
 {
     list->cur += n;
     if (list->cur > list->size)
         list->cur = list->size;
 }
 
-int is_present(int n, linkedList* list)
+int is_present(int n, linkedList *list)
 {
-    node* temp = list->head;
+    node *temp = list->head;
     while (temp)
     {
         if (temp->element == n)
@@ -188,71 +199,14 @@ int is_present(int n, linkedList* list)
     return 0;
 }
 
-void clear(linkedList* list)
+void clear(linkedList *list)
 {
     free_list(list);
 }
 
-int delete_item(int item, linkedList* list)
+int search(int item, linkedList *list)
 {
-    node* temp = list->head;
-    int idx = 0;
-
-    while (temp)
-    {
-        if (temp->element == item)
-            break;
-        temp = temp->next;
-        idx++;
-    }
-
-    if (!temp)
-    {
-        printf("%d not found\n", item);
-        return 0;
-    }
-
-    int barValueIdx = list->cur - 1;
-
-    node* left = temp->prev;
-    node* right = temp->next;
-
-    if (left) left->next = right;
-    else list->head = right;
-
-    if (right) right->prev = left;
-    else list->tail = left;
-
-    free(temp);
-    list->size--;
-
-    if (idx <= barValueIdx)
-        list->cur--;
-
-    if (list->cur < 0) list->cur = 0;
-    if (list->cur > list->size) list->cur = list->size;
-
-    return 1;
-}
-
-void swap_ind(int ind1, int ind2, linkedList* list)
-{
-    if (ind1 < 0 || ind2 < 0 || ind1 >= list->size || ind2 >= list->size)
-        return;
-
-    if (ind1 == ind2) return;
-
-    node* n1 = create_node(list, ind1);
-    node* n2 = create_node(list, ind2);
-
-    int tmp = n1->element;
-    n1->element = n2->element;
-    n2->element = tmp;
-}
-
-int search(int item, linkedList* list)
-{
-    node* temp = list->head;
+    node *temp = list->head;
     int idx = 0;
     while (temp)
     {
@@ -264,44 +218,77 @@ int search(int item, linkedList* list)
     return -1;
 }
 
-int find(int ind, linkedList* list)
+int delete_item(int item, linkedList *list)
 {
-    if (ind < 0 || ind >= list->size)
+    int idx = search(item, list);
+
+    if (idx == -1)
+    return 0;
+
+    int temp = list->cur;
+    list->cur = idx + 1;
+    delete_cur(list);
+
+    if (temp != list->size + 1)
     {
-        printf("%d is not a valid index\n", ind);
-        return -1;
+        if (temp > idx + 1)
+            list->cur = temp - 1;
+        else
+            list->cur = (temp > list->size) ? list->size : temp;
     }
 
-    node* n = create_node(list, ind);
+    if (list->cur < 0)
+        list->cur = 0;
+
+    return 1;
+}
+void swap_ind(int ind1, int ind2, linkedList *list)
+{
+    if (ind1 < 0 || ind2 < 0 || ind1 >= list->size || ind2 >= list->size)
+        return;
+
+    if (ind1 == ind2)
+        return;
+
+    node *n1 = traversal_ptr(list, ind1);
+    node *n2 = traversal_ptr(list, ind2);
+
+    int tmp = n1->element;
+    n1->element = n2->element;
+    n2->element = tmp;
+}
+
+
+int find(int ind, linkedList *list)
+{
+    if (ind < 0 || ind >= list->size)
+        return -1;
+
+    node *n = traversal_ptr(list, ind);
     list->cur = ind + 1;
-    print(list);
     return n->element;
 }
 
-int update(int ind, int value, linkedList* list)
+int update(int ind, int value, linkedList *list)
 {
     if (ind < 0 || ind >= list->size)
-    {
-        printf("%d is not a valid index\n", ind);
         return -1;
-    }
 
-    node* n = create_node(list, ind);
-    int old = n->element;
+    node *n = traversal_ptr(list, ind);
+    int temp = n->element;
     n->element = value;
 
     list->cur = ind + 1;
-    print(list);
-    return old;
+    return temp;
 }
 
-int trim(linkedList* list)
+int trim(linkedList *list)
 {
     if (list->size == 0)
         return -1;
 
     int val = list->tail->element;
-    node* temp = list->tail;
+    node *temp = list->tail;
 
     list->tail = temp->prev;
     if (list->tail)
@@ -318,10 +305,10 @@ int trim(linkedList* list)
     return val;
 }
 
-void reverse(linkedList* list)
+void reverse(linkedList *list)
 {
-    node* cur = list->head;
-    node* temp = NULL;
+    node *cur = list->head;
+    node *temp = NULL;
 
     while (cur)
     {
@@ -334,5 +321,6 @@ void reverse(linkedList* list)
     temp = list->head;
     list->head = list->tail;
     list->tail = temp;
-
 }
+
+
