@@ -1,110 +1,259 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct 
+typedef struct
 {
     int *array;
-    // declare variables you need
+    int capacity;
+    int size;
+    int cur_pos;
 } arrayList;
 
-void init(arrayList* list)
+void increase_capacity(arrayList *list)
 {
-    // implement initialization
+    int temp = list->capacity;
+    list->capacity *= 2;
+    list->array = (int *)realloc(list->array, list->capacity * sizeof(int));
+    printf("Capacity increased from %d to %d\n", temp, list->capacity);
 }
 
-void free_list(arrayList* list)
+void decrease_capacity(arrayList *list)
 {
-    // implement destruction of list
+    if (list->capacity <= 2)
+        return;
+
+    int temp = list->capacity;
+    list->capacity /= 2;
+    if (list->capacity < 2)
+        list->capacity = 2;
+
+    list->array = (int *)realloc(list->array, list->capacity * sizeof(int));
+    printf("Capacity decreased from %d to %d\n", temp, list->capacity);
 }
 
-void increase_capacity(arrayList* list)
+void init(arrayList *list)
 {
-    // implement capacity increase
+    list->capacity = 2;
+    list->size = 0;
+    list->cur_pos = 0;
+    list->array = (int *)malloc(2 * sizeof(int));
 }
 
-void decrease_capacity(arrayList* list)
+void free_list(arrayList *list)
 {
-    // implement capacity decrease
+    free(list->array);
 }
 
-void print(arrayList* list)
+void print(arrayList *list)
 {
-    // implement list printing
+    if (list->size == 0)
+    {
+        printf("[ . ]\n");
+        return;
+    }
+    printf("[");
+    for (int i = 0; i < list->size; i++)
+    {
+        if (i+1 == list->cur_pos)
+            printf(" %d|", list->array[i]);
+        else
+            printf(" %d", list->array[i]);
+    }
+    printf(" ]\n");
 }
 
-void insert(int item, arrayList* list)
+void insert(int item, arrayList *list)
 {
-    // implement insert function
+    if (list->size + 1 > list->capacity / 2)
+        increase_capacity(list);
+
+    for (int i = list->size; i > list->cur_pos; i--)
+        list->array[i] = list->array[i - 1];
+
+    list->array[list->cur_pos] = item;
+    list->size++;
+    list->cur_pos++; 
 }
 
-int delete_cur(arrayList* list)
+int delete_cur(arrayList *list)
 {
-    // implement deletion of element at current index position
+    if (list->size == 0 || list->cur_pos == 0)
+        return -1;
+
+    int idx = list->cur_pos - 1;
+    int deleted = list->array[idx];
+
+    for (int i = idx; i < list->size - 1; i++)
+        list->array[i] = list->array[i + 1];
+
+    list->size--;
+
+   
+    if (idx == list->size)
+    {
+      
+        list->cur_pos--;
+    }
+    
+    if (list->cur_pos < 0)
+        list->cur_pos = 0;
+    if (list->cur_pos > list->size)
+        list->cur_pos = list->size;
+
+    if (list->size < list->capacity / 4)
+        decrease_capacity(list);
+
+    return deleted;
 }
 
-void append(int item, arrayList* list)
+void append(int item, arrayList *list)
 {
-    // implement append function
+    if (list->size + 1 > list->capacity / 2)
+        increase_capacity(list);
+
+    list->array[list->size++] = item;
+    if (list->size == 1)
+        list->cur_pos = 1; 
 }
 
-int size(arrayList* list)
+int size(arrayList *list)
 {
-    // implement size function
+    return list->size;
 }
 
-void prev(int n, arrayList* list)
+void prev(int n, arrayList *list)
 {
-    // implement prev function
+    list->cur_pos -= n;
+    if (list->cur_pos < 0)
+        list->cur_pos = 0;
 }
 
-void next(int n, arrayList* list)
+void next(int n, arrayList *list)
 {
-    // implement next function
+    list->cur_pos += n;
+    if (list->cur_pos > list->size)
+        list->cur_pos = list->size;
 }
 
-int is_present(int n, arrayList* list)
+int is_present(int n, arrayList *list)
 {
-    // implement presence checking function
+    for (int i = 0; i < list->size; i++)
+        if (list->array[i] == n)
+            return 1;
+    return 0;
 }
 
-void clear(arrayList* list)
+void clear(arrayList *list)
 {
-    // implement list clearing function
+    free(list->array);
+    init(list);
 }
 
 int delete_item(int item, arrayList* list)
 {
-    // implement item deletion function
+    int idx = -1;
+
+    // search first occurrence
+    for (int i = 0; i < list->size; i++)
+    {
+        if (list->array[i] == item)
+        {
+            idx = i;
+            break;
+        }
+    }
+
+    if (idx == -1)
+    {
+        printf("%d not found\n", item);
+        return 0;
+    }
+
+    int barValueIdx = list->cur_pos - 1;
+
+    for (int i = idx; i < list->size - 1; i++)
+        list->array[i] = list->array[i + 1];
+
+    list->size--;
+
+    // cursor adjustment (THE FIX)
+    if (idx <= barValueIdx)
+        list->cur_pos--;
+
+    // bounds safety
+    if (list->cur_pos < 0) list->cur_pos = 0;
+    if (list->cur_pos > list->size) list->cur_pos = list->size;
+
+    if (list->size < list->capacity / 4)
+        decrease_capacity(list);
+
+    return 1;
 }
 
-void swap_ind(int ind1, int ind2, arrayList* list)
+void swap_ind(int ind1, int ind2, arrayList *list)
 {
-    // implement swap function at metioned index position
+    if (ind1 < 0 || ind2 < 0 || ind1 >= list->size || ind2 >= list->size)
+        return;
+
+    int temp = list->array[ind1];
+    list->array[ind1] = list->array[ind2];
+    list->array[ind2] = temp;
 }
 
-int search(int item, arrayList* list)
+int search(int item, arrayList *list)
 {
-    // implement search function
+    for (int i = 0; i < list->size; i++)
+        if (list->array[i] == item)
+            return i;
+    return -1;
 }
 
-int find(int ind, arrayList* list)
+int find(int ind, arrayList *list)
 {
-    // implement find function
+    if (ind < 0 || ind >= list->size)
+        return -1;
+
+    list->cur_pos = ind;
+    return list->array[ind];
 }
 
-int update(int ind, int value, arrayList* list)
+int update(int ind, int value, arrayList *list)
 {
-    // implement update function at metioned index position
+    if (ind < 0 || ind >= list->size)
+        return -1;
+
+    int old = list->array[ind];
+    list->array[ind] = value;
+    list->cur_pos = ind+1;
+    return old;
 }
 
-int trim(arrayList* list)
+int trim(arrayList *list)
 {
-    // implement trim function
+    if (list->size == 0)
+        return -1;
+
+    int val = list->array[list->size - 1];
+    list->size--;
+
+    if (list->cur_pos > list->size)
+        list->cur_pos = list->size;
+
+    if (list->size < list->capacity / 4)
+        decrease_capacity(list);
+
+    return val;
 }
 
-void reverse(arrayList* list)
+void reverse(arrayList *list)
 {
-    // implement reverse function
+    int start = 0, end = list->size - 1;
+    while (start < end)
+    {
+        int temp = list->array[start];
+        list->array[start] = list->array[end];
+        list->array[end] = temp;
+        start++;
+        end--;
+    }
 }
-
-// you can define helper functions you need
