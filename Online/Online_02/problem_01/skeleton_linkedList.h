@@ -360,7 +360,7 @@ void reverse_range(linkedList *list, int k)
     list->head = reverseKGroups(list->head, k);
 
     node *currrent = list->head;
-    while (currrent != NULL || currrent->next != NULL)
+    while (currrent->next != NULL)
     {
         currrent = currrent->next;
     }

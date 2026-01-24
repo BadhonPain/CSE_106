@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "skeleton_linkedList.h"
+#include "skeleton_arrayList.h"
 
 int main()
 {
@@ -7,7 +7,7 @@ int main()
     if (file == NULL)
         return 1;
 
-    linkedList list;
+    arrayList list;
     init(&list);
 
     int func, param, param2;

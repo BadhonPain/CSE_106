@@ -250,7 +250,24 @@ void reverse(arrayList *list)
     }
 }
 
+void reverse_range(arrayList *list, int k)
+{
+    if (k <= 1 || list->size <= 1)
+        return;
 
+    for (int i = 0; i + k <= list->size; i += k)
+    {
+        int start = i;
+        int end = i + k - 1;
 
+        while (start < end)
+        {
+            int temp = list->array[start];
+            list->array[start] = list->array[end];
+            list->array[end] = temp;
 
-
+            start++;
+            end--;
+        }
+    }
+}
