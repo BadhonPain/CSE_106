@@ -7,7 +7,7 @@
 [![Language: C++](https://img.shields.io/badge/Language-C++-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
 [![Language: C](https://img.shields.io/badge/Language-C-A8B9CC?style=for-the-badge&logo=c&logoColor=white)](https://en.cppreference.com/w/c)
 
-*Coursework, homework assignments, and lab exam solutions for CSE 106: Data Structures and Algorithms I Sessional at BUET.*
+*Coursework, homework assignments, and lab assesments solutions for CSE 106: Data Structures and Algorithms I Sessional at BUET.*
 
 ---
 
@@ -31,7 +31,7 @@ This repository contains the coursework, homework assignments, and lab exam solu
 
 The course is structured around two main assessment components:
 *   **Offline Assignments:** Comprehensive assignments completed at home, focused on implementing core data structures and algorithmic paradigms from scratch.
-*   **Online Lab Exams:** Time-constrained lab exams conducted in the BUET computer laboratory to test problem-solving ability, algorithmic efficiency, and the application of offline concepts to new scenarios.
+*   **Online Lab Assesments:** Time-constrained lab assesments conducted in the BUET laboratory **(VDAL)** to test problem-solving ability, algorithmic efficiency, and the application of offline concepts to new scenarios.
 
 ---
 
@@ -122,7 +122,7 @@ Computed the minimum cost required to align/transform a source sequence into a t
 
 ---
 
-## 💻 Online Lab Exams
+## 💻 Online Assesments
 
 ### [Online 01: Array Triplet Sum](./Online/Online_01)
 > **Concepts:** Array Traversals, Sorting, Two-Pointer Approach
