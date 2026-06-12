@@ -127,7 +127,22 @@ gcc -O3 main.c -o main
 ```
 
 > **Note:** No external libraries are required. All solutions depend only on the C/C++ standard library.
+---
+
+## Related Repositories
+
+If you are interested in more Data Structures, Algorithms, or Object-Oriented Programming resources, feel free to check out these related projects:
+
+*   **[DSA_Genesis](https://github.com/BadhonPain/DSA_Genesis)**: A comprehensive repository covering fundamental to advanced Data Structures and Algorithms implementations.
+*   **[AlgoVista](https://github.com/BadhonPain/AlgoVista)**: An interactive Data Structures and Algorithms visualizer designed to make learning algorithms intuitive and visual.
+*   **[OOPverse](https://github.com/BadhonPain/OOPverse)**: A dedicated space for Object-Oriented Programming (OOP) concepts, designs, and principles.
 
 ---
 
-*Maintained as part of coursework at BUET — Department of Computer Science and Engineering.*
+## Author & Maintainer
+
+*   **[Badhon Pain](https://github.com/BadhonPain)**
+    *   *Current Undergraduate Student of Computer Science and Engineering*
+    *   *Bangladesh University of Engineering and Technology (BUET)*
+
+>*Maintained as part of coursework at BUET.*
